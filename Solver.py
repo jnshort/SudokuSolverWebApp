@@ -4,8 +4,8 @@ class Solver:
     def __init__(self, board, curr=[0,0], guessed=[]):
         self.board = board
         self.curr = curr
-        self.guessed = guessed
         self.solved = False
+        self.guessed = []
 
     def print(self):
         print(self.board)
@@ -14,12 +14,6 @@ class Solver:
         if 0 in self.board:
             return False
         return True
-
-    def update_prev(self, a):
-        self.board = prev_board
-        self.curr = prev_curr
-        self.guessed = prev_guessed
-        self.guessed.append(a)
 
     def inc_curr(self):
         if self.curr[0] == self.curr[1] == 8:
@@ -31,7 +25,6 @@ class Solver:
             return True
         self.curr[0] += 1
         return True
-            
 
     def get_row(self):
         return self.board[self.curr[0],:]
@@ -40,70 +33,52 @@ class Solver:
         return self.board[:,self.curr[1]]
 
     def get_box(self):
-        box = None
         if self.curr[0] in [0,1,2]:
             if self.curr[1] in [0,1,2]:
-                box = 1
+                return self.board[0:3,0:3].flatten()
             if self.curr[1] in [3,4,5]:
-                box = 2
+                return self.board[0:3,3:6].flatten()
             if self.curr[1] in [6,7,8]:
-                box = 3
+                return self.board[0:3,6:].flatten()
         if self.curr[0] in [3,4,5]:
             if self.curr[1] in [0,1,2]:
-                box = 4
+                return self.board[3:6,0:3].flatten()
             if self.curr[1] in [3,4,5]:
-                box = 5
+                return self.board[3:6,3:6].flatten()
             if self.curr[1] in [6,7,8]:
-                box = 6
+                return self.board[3:6,6:].flatten()
         if self.curr[0] in [6,7,8]:
             if self.curr[1] in [0,1,2]:
-                box = 7
+                return self.board[6:,0:3].flatten()
             if self.curr[1] in [3,4,5]:
-                box = 8
+                return self.board[6:,3:6].flatten()
             if self.curr[1] in [6,7,8]:
-                box = 9
+                return self.board[6:,6:].flatten()
+        return None
 
-        if box == None:
-            return None
-
-        if box == 1:
-            return self.board[0:3,0:3].flatten()
-        if box == 2:
-            return self.board[0:3,3:6].flatten()
-        if box == 3:
-            return self.board[0:3,6:].flatten()
-        if box == 4:
-            return self.board[3:6,0:3].flatten()
-        if box == 5:
-            return self.board[3:6,3:6].flatten()
-        if box == 6:
-            return self.board[3:6,6:].flatten()
-        if box == 7:
-            return self.board[6:,0:3].flatten()
-        if box == 8:
-            return self.board[6:,3:6].flatten()
-        if box == 9:
-            return self.board[6:,6:].flatten()
-
+    def get_valid(self):
+        row = self.get_row()
+        col = self.get_col()
+        box = self.get_box()
+        valid = []
+        for i in range(1,10):
+            found = False
+            if i in row:
+                found = True
+            if i in col:
+                found = True
+            if i in box:
+                found = True
+            if found == False:
+                valid.append(i)
+        return valid
+ 
     def solve_step(self):
         guess_req = False
         while True:
             copy_old = np.copy(self.board)
+            valid = self.get_valid()
             if self.board[self.curr[0],self.curr[1]] == 0:
-                row = self.get_row()
-                col = self.get_col()
-                box = self.get_box()
-                valid = []
-                for i in range(1,10):
-                    found = False
-                    if i in row:
-                        found = True
-                    if i in col:
-                        found = True
-                    if i in box:
-                        found = True
-                    if found == False:
-                        valid.append(i)
                 if len(valid) == 1:
                     self.board[self.curr[0],self.curr[1]] = valid[0]
             if self.inc_curr() == False:
@@ -114,6 +89,8 @@ class Solver:
         return guess_req
     
     def guess(self):
+        copy_old = np.copy(self.board)
+        valid = self.get_valid()
         pass
 
 
