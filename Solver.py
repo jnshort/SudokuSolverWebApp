@@ -5,7 +5,6 @@ class Solver:
         self.board = board
         self.curr = curr
         self.solved = False
-        self.guessed = []
 
     def print(self):
         print(self.board)
@@ -74,24 +73,21 @@ class Solver:
         return valid
  
     def solve_step(self):
-        guess_req = False
+        guess_req = 0
         while True:
             copy_old = np.copy(self.board)
             valid = self.get_valid()
             if self.board[self.curr[0],self.curr[1]] == 0:
+                if len(valid) == 0:
+                    guess_req = -1
                 if len(valid) == 1:
                     self.board[self.curr[0],self.curr[1]] = valid[0]
             if self.inc_curr() == False:
                 if self.board.all() == copy_old.all():
-                    guess_req = True
+                    guess_req = 1
                 break
         print(self.board)
         return guess_req
-    
-    def guess(self):
-        copy_old = np.copy(self.board)
-        valid = self.get_valid()
-        pass
 
 
 board = np.array([[0,4,0,0,0,7,0,0,0],
